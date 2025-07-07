@@ -1,7 +1,8 @@
-
 import React from 'react';
 import LeaderboardScreen from './src/screens/LeaderboardScreen';
-const App: React.FC = () => {
+
+const App = () => {
   return <LeaderboardScreen />;
 };
+
 export default App;

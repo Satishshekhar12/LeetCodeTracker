@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {
   View,
   Text,
@@ -9,15 +9,15 @@ import {
   RefreshControl,
 } from 'react-native';
 import axios from 'axios';
-import { fetchUserData, saveToStorage, getFromStorage } from '../services/api';
+import {fetchUserData, saveToStorage, getFromStorage} from '../services/api';
 import UserRow from '../components/UserRow';
 
-const LeaderboardScreen: React.FC = () => {
-  const [leaderboardData, setLeaderboardData] = useState<any[]>([]);
+const LeaderboardScreen = () => {
+  const [leaderboardData, setLeaderboardData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [usernames, setUsernames] = useState<string[]>([]);
-  const [usernameMappings, setUsernameMappings] = useState<{ [key: string]: string }>({});
+  const [usernames, setUsernames] = useState([]);
+  const [usernameMappings, setUsernameMappings] = useState({});
 
   // Fetch usernames and username mappings from GitHub on app start
   useEffect(() => {
@@ -25,18 +25,21 @@ const LeaderboardScreen: React.FC = () => {
       try {
         // Fetch usernames
         const usernamesResponse = await axios.get(
-          'https://raw.githubusercontent.com/College-Notes/leetcode-data/refs/heads/main/usernames.json'
+          'https://raw.githubusercontent.com/College-Notes/leetcode-data/refs/heads/main/usernames.json',
         );
         setUsernames(usernamesResponse.data);
 
         // Fetch username mappings
         const mappingsResponse = await axios.get(
-          'https://raw.githubusercontent.com/College-Notes/leetcode-data/refs/heads/main/usernameMappings.json'
+          'https://raw.githubusercontent.com/College-Notes/leetcode-data/refs/heads/main/usernameMappings.json',
         );
         setUsernameMappings(mappingsResponse.data);
       } catch (error) {
         console.error('Failed to fetch data from GitHub:', error);
-        Alert.alert('Error', 'Failed to fetch data from GitHub. Using default values.');
+        Alert.alert(
+          'Error',
+          'Failed to fetch data from GitHub. Using default values.',
+        );
         setUsernames([]); // Fallback to an empty list
         setUsernameMappings({}); // Fallback to an empty object
       }
@@ -44,7 +47,7 @@ const LeaderboardScreen: React.FC = () => {
     fetchData();
   }, []);
 
-  const fetchAllUserData = async () => {
+  const fetchAllUserData = useCallback(async () => {
     try {
       setRefreshing(true); // Start refreshing
       const currentDate = new Date();
@@ -52,7 +55,7 @@ const LeaderboardScreen: React.FC = () => {
       const currentMonth = currentDate.toISOString().slice(0, 7); // YYYY-MM
 
       const results = await Promise.all(
-        usernames.map(async (username) => {
+        usernames.map(async username => {
           try {
             // Fetch data from API
             const apiData = await fetchUserData(username);
@@ -85,11 +88,14 @@ const LeaderboardScreen: React.FC = () => {
             // Calculate monthly increase
             const monthlyIncrease = isNewMonth
               ? 0 // Reset monthly increase if it's a new month
-              : (apiData.totalSolved || 0) - (storedData.startOfMonthTotal || 0);
+              : (apiData.totalSolved || 0) -
+                (storedData.startOfMonthTotal || 0);
 
             // Ensure dailyIncrease and monthlyIncrease are valid numbers
             const validDailyIncrease = isNaN(dailyIncrease) ? 0 : dailyIncrease;
-            const validMonthlyIncrease = isNaN(monthlyIncrease) ? 0 : monthlyIncrease;
+            const validMonthlyIncrease = isNaN(monthlyIncrease)
+              ? 0
+              : monthlyIncrease;
 
             // Update storage with new data
             const updatedStoredData = {
@@ -149,13 +155,13 @@ const LeaderboardScreen: React.FC = () => {
                   monthlyIncrease: 0,
                 };
           }
-        })
+        }),
       );
 
       // Sort and rank data
       const sortedData = results
         .sort((a, b) => b.total - a.total)
-        .map((user, index) => ({ ...user, rank: index + 1 }));
+        .map((user, index) => ({...user, rank: index + 1}));
 
       setLeaderboardData(sortedData);
       setLoading(false);
@@ -166,13 +172,13 @@ const LeaderboardScreen: React.FC = () => {
     } finally {
       setRefreshing(false); // Stop refreshing
     }
-  };
+  }, [usernames, usernameMappings]);
 
   useEffect(() => {
     if (usernames.length > 0) {
       fetchAllUserData();
     }
-  }, [usernames]);
+  }, [usernames, fetchAllUserData]);
 
   return (
     <View style={styles.container}>
@@ -193,8 +199,8 @@ const LeaderboardScreen: React.FC = () => {
           </View>
           <FlatList
             data={leaderboardData}
-            keyExtractor={(item) => item.username}
-            renderItem={({ item }) => (
+            keyExtractor={item => item.username}
+            renderItem={({item}) => (
               <UserRow
                 rank={item.rank}
                 username={item.username}
@@ -254,12 +260,12 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     paddingLeft: 10,
   },
-  easy: { color: 'green' },
-  medium: { color: 'orange' },
-  hard: { color: 'red' },
-  total: { fontWeight: 'bold' },
-  daily: { color: 'blue' },
-  monthly: { color: 'purple' },
+  easy: {color: 'green'},
+  medium: {color: 'orange'},
+  hard: {color: 'red'},
+  total: {fontWeight: 'bold'},
+  daily: {color: 'blue'},
+  monthly: {color: 'purple'},
 });
 
 export default LeaderboardScreen;

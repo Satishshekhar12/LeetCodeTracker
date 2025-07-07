@@ -7,7 +7,7 @@ const BACKEND_API_URL = 'https://leetcode-backend-ge9p.onrender.com';
  * Fetch user data from the backend API.
  * @param username - The LeetCode username.
  */
-export const fetchUserData = async (username: string) => {
+export const fetchUserData = async username => {
   try {
     const response = await axios.get(`${BACKEND_API_URL}/user/${username}`);
     return response.data;
@@ -22,7 +22,7 @@ export const fetchUserData = async (username: string) => {
  * @param key - The key to store the data under.
  * @param data - The data to store.
  */
-export const saveToStorage = async (key: string, data: any) => {
+export const saveToStorage = async (key, data) => {
   try {
     await AsyncStorage.setItem(key, JSON.stringify(data));
   } catch (error) {
@@ -34,7 +34,7 @@ export const saveToStorage = async (key: string, data: any) => {
  * Retrieve data from AsyncStorage.
  * @param key - The key to retrieve data for.
  */
-export const getFromStorage = async (key: string) => {
+export const getFromStorage = async key => {
   try {
     const data = await AsyncStorage.getItem(key);
     return data ? JSON.parse(data) : null;
