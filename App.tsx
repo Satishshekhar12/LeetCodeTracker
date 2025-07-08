@@ -1,7 +1,7 @@
 import React from 'react';
 import LeaderboardScreen from './src/screens/LeaderboardScreen';
 
-const App = () => {
+const App: React.FC = () => {
   return <LeaderboardScreen />;
 };
 

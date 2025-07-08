@@ -1,7 +1,18 @@
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 
-const UserRow = React.memo(
+interface UserRowProps {
+  rank: number;
+  username: string;
+  easy: number;
+  medium: number;
+  hard: number;
+  total: number;
+  dailyIncrease: number;
+  monthlyIncrease: number;
+}
+
+const UserRow: React.FC<UserRowProps> = React.memo(
   ({
     rank,
     username,

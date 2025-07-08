@@ -6,6 +6,7 @@ A React Native app to track LeetCode progress and display rankings in a leaderbo
 
 - **Leaderboard**: Rankings based on problems solved
 - **Problem Breakdown**: Easy, medium, hard counts
+- **Add Users**: Add new users with the "+" button
 - **Offline Support**: Cached data for offline viewing
 - **Pull-to-Refresh**: Update data easily
 
@@ -46,20 +47,21 @@ A React Native app to track LeetCode progress and display rankings in a leaderbo
 ```
 LeetCodeTracker/
 ├── src/
-│   ├── components/   # UI components
-│   ├── screens/      # App screens
-│   └── services/     # API and storage logic
-├── App.jsx           # Main app component
+│   ├── components/   # UI components (TypeScript)
+│   ├── screens/      # App screens (TypeScript)
+│   ├── services/     # API and storage logic (TypeScript)
+│   └── types/        # TypeScript type definitions
+├── App.tsx           # Main app component
 ├── index.js          # Entry point
 └── README.md         # Documentation
 ```
 
 ## 🔧 Configuration
 
-Update the API URL in `src/services/api.js`:
+Update the API URL in `src/services/api.ts`:
 
-```javascript
-const BACKEND_API_URL = 'https://your-backend-api.com';
+```typescript
+const BACKEND_API_URL = 'https://leetcode-backend-ge9p.onrender.com';
 ```
 
 ## 🐛 Troubleshooting
